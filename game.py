@@ -5,25 +5,27 @@ import os
 from threading import Thread
 import threading
 import time
-import pygame
+from pygame import mixer
 global enemy_x
 global enemy_y
 
 enemy_x=650
 enemy_y=50
-pygame.mixer.init()
+
+mixer.init()
 
 #***************Reproducir música***********************
-def play(filename):
+def play(filename,loop):
     #path = os.path.join('Sounds',filename)
-    pygame.mixer.music.load(filename)
-    pygame.mixer.music.play(loops=-1)
+    effects= mixer.Sound(filename)
+    effects.play(loops=loop)
 
 def bgmusic():
-    while(True):
-        print("PLAY SONG")
-        play("Sounds/song.mp3")
-        time.sleep(1)
+    print("PLAY SONG")
+    #play("song.mp3",-1)
+    mixer.music.load("song.mp3")
+    mixer.music.play(loops=-1)
+        #time.sleep(1)
 
     
 #***************Cargar Imagenes***********************
@@ -61,41 +63,52 @@ def dibujar():
         #self.__r.place(x=500,y=25)
         #botonAvanzar1 = Button(window, text="Lanzar P1", command=self.__jugar1,cv="#144214",fg="white",font=("Helvetica",15)).place(x=100,y=20)
         #botonAvanzar2 = Button(window, text="Lanzar P2", command=self.__jugar2,cv="#a9052e",fg="white",font=("Helvetica",15)).place(x=250,y=20)
-        botonSave = Button(window, text="Play Song", command=bgmusic, bg="#096654",fg="white",font=("Helvetica",15)).place(x=400,y=20)
-        cv.move("enemy",enemy_x,5)
+        #botonSave = Button(window, text="Play Song", command=bgmusic, bg="#096654",fg="white",font=("Helvetica",15)).place(x=400,y=20)
+        
         #time.sleep(5)
-
+        #t4 = Thread(target=move_enemy, args=())
+        #t4.start()
+        move_enemy()
         def up(e):
            x = 0
            y = -20
            cv.move("player", x, y)
-           play("move.mp3")
+           play("move.wav",1)
 
         def down(e):
            x = 0
            y = 20
            cv.move("player", x, y)
+           play("move.wav",1)
         window.bind("<Up>", up)
         window.bind("<Down>", down)
 
+        
+
+        def move_enemy():
+            while (True):
+                move_enemy_down()
+                move_enemy_up()
+            
+        def move_enemy_down():
+            global enemy_x
+            global enemy_y
+            while(enemy_y<=550):
+                enemy_y+=25
+                cv.move("enemy",enemy_x,25)
+                time.sleep(1)
+                print(enemy_y)
+
+        def move_enemy_up():
+            global enemy_x
+            global enemy_y
+            while(enemy_y>=50):
+                enemy_y-=25
+                cv.move("enemy",enemy_x,-25)
+                time.sleep(1)
+                print(enemy_y)
+
         window.mainloop()
-
-
-def move_enemy_down():
-    global enemy_x
-    global enemy_y
-    while(enemy_y<=550):
-        enemy_y+=25
-        time.sleep(1)
-        print(enemy_y)
-
-def move_enemy_up():
-    global enemy_x
-    global enemy_y
-    while(enemy_y>=50):
-        enemy_y-=25
-        time.sleep(1)
-        print(enemy_y)
 
 
 t1= Thread(target=bgmusic, args=())

@@ -6,12 +6,16 @@ from playsound import playsound
 from threading import Thread
 import threading
 import time
-import pygame
+
 global enemy_x
 global enemy_y
+global player_x
+global player_y
 
 enemy_x=650
 enemy_y=50
+player_x=170
+player_y=140
 
 #***************Reproducir música***********************
 def play(filename):
@@ -41,6 +45,8 @@ def loadImage(filename):
 def dibujar():
         global enemy_x
         global enemy_y
+        global player_x
+        global player_y
         window = Tk()
         window.title("GAME")
         window.minsize(800,600)
@@ -61,21 +67,68 @@ def dibujar():
         #botonAvanzar1 = Button(window, text="Lanzar P1", command=self.__jugar1,cv="#144214",fg="white",font=("Helvetica",15)).place(x=100,y=20)
         #botonAvanzar2 = Button(window, text="Lanzar P2", command=self.__jugar2,cv="#a9052e",fg="white",font=("Helvetica",15)).place(x=250,y=20)
         botonSave = Button(window, text="Play Song", command=bgmusic, bg="#096654",fg="white",font=("Helvetica",15)).place(x=400,y=20)
-        cv.move("enemy",enemy_x,5)
+        #cv.move("enemy",enemy_x,5)
+        label= Label(window)
+        label.pack(pady=20)
+        def wait_time():
+           label.config(text="Su turno")
+           i=0
+           while (i<6):
+               i=i+1
+               print("Time elapsed: "+str(i)+ " seconds")
+               time.sleep(1)
+               
+           label.config(text="Time Over")
+           messagebox.showinfo(message="GAME OVER", title="You Lose!")
+        def threading():
+            # Call work function
+            t1=Thread(target=wait_time)
+            t1.start()
+           
         #time.sleep(5)
+        b1= Button(window,text= "Start", command=threading).place(x=400,y=500)
 
+        #b1= Button(window,text= "Start", command=wait_time)
+        
         def up(e):
+           global player_y
+           player_y-=20
            x = 0
            y = -20
            cv.move("player", x, y)
            play("move.mp3")
 
         def down(e):
+           global player_y
+           player_y+=20
            x = 0
            y = 20
            cv.move("player", x, y)
+           play("move.mp3")
+
+        def left(e):
+            global player_x
+            player_x-=20
+            x = -20
+            y = 0
+            cv.move("player", x, y)
+            play("move.mp3")
+
+        def right(e):
+             global player_x
+             player_x+=20
+             x = 20
+             y = 0
+             cv.move("player", x, y)
+             play("move.mp3")
+
+             
         window.bind("<Up>", up)
         window.bind("<Down>", down)
+        window.bind("<Left>", left)
+        window.bind("<Right>", right)
+
+        
 
         window.mainloop()
 
